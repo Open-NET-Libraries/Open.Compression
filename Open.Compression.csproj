@@ -8,8 +8,13 @@ Part of the "Open" set of libraries.</Description>
     <Authors>electricessence</Authors>
     <Company />
     <Product />
-    <PackageLicenseUrl>https://github.com/electricessence/Open/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/electricessence/Open.Compression/blob/master/LISCENSE.md</PackageLicenseUrl>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Copyright>https://github.com/electricessence/Open.Compression/blob/master/LISCENSE.md</Copyright>
+    <PackageProjectUrl>https://github.com/electricessence/Open.Compression/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/electricessence/Open.Compression/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>dotnet, dotnetcore, cs, compression, gzip, extensions</PackageTags>
   </PropertyGroup>
 
 </Project>
