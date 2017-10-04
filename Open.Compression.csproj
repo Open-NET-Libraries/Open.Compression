@@ -17,4 +17,8 @@ Part of the "Open" set of libraries.</Description>
     <PackageTags>dotnet, dotnetcore, cs, compression, gzip, extensions</PackageTags>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Open.Collections" Version="1.1.1" />
+  </ItemGroup>
+
 </Project>
