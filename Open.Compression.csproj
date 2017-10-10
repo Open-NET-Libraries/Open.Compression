@@ -18,7 +18,14 @@ Part of the "Open" set of libraries.</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Open.Collections" Version="1.1.1" />
+    <None Remove=".git" />
+    <None Remove=".gitignore" />
+    <None Remove="LISCENSE.md" />
+    <None Remove="README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Open.Collections" Version="1.2.0" />
   </ItemGroup>
 
 </Project>
