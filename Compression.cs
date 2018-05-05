@@ -3,11 +3,12 @@
  * Licensing: MIT https://github.com/electricessence/Open/blob/dotnet-core/LICENSE.md
  */
 
+using Open.Collections;
 using System;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using Open.Collections;
 
 
 namespace Open.Formatting
@@ -20,8 +21,10 @@ namespace Open.Formatting
 		/// </summary>
 		public static byte[] Compress(byte[] data)
 		{
-			if(data==null)
-				throw new ArgumentNullException("data");
+			if (data == null)
+				throw new ArgumentNullException(nameof(data));
+			Contract.EndContractBlock();
+
 			using (var msi = new MemoryStream(data))
 			using (var mso = new MemoryStream())
 			{
@@ -37,8 +40,10 @@ namespace Open.Formatting
 		/// </summary>
 		public static byte[] Compress(string data, Encoding encoding = null)
 		{
-			if(data==null)
-				throw new ArgumentNullException("data");
+			if (data == null)
+				throw new ArgumentNullException(nameof(data));
+			Contract.EndContractBlock();
+
 			return Compress(data.ToByteArray(encoding));
 		}
 
@@ -47,19 +52,21 @@ namespace Open.Formatting
 		/// </summary>
 		public static string CompressToString(byte[] data, Encoding encoding = null)
 		{
-			if(data==null)
-				throw new ArgumentNullException("data");
+			if (data == null)
+				throw new ArgumentNullException(nameof(data));
+			Contract.EndContractBlock();
 
 			return (encoding ?? Encoding.UTF8).GetString(Compress(data));
 		}
 
 		public static string CompressToString(string text, Encoding encoding = null)
 		{
-			if(text==null)
-				throw new ArgumentNullException("text");
+			if (text == null)
+				throw new ArgumentNullException(nameof(text));
+			Contract.EndContractBlock();
 
 
-			byte[] buffer = (encoding??Encoding.UTF8).GetBytes(text);
+			byte[] buffer = (encoding ?? Encoding.UTF8).GetBytes(text);
 			var ms = new MemoryStream();
 			using (var stream = new GZipStream(ms, CompressionMode.Compress, true))
 				stream.Write(buffer, 0, buffer.Length);
@@ -81,8 +88,10 @@ namespace Open.Formatting
 		/// </summary>
 		public static byte[] Decompress(byte[] data)
 		{
-			if(data==null)
-				throw new ArgumentNullException("data");
+			if (data == null)
+				throw new ArgumentNullException(nameof(data));
+			Contract.EndContractBlock();
+
 			using (var msi = new MemoryStream(data))
 			using (var mso = new MemoryStream())
 			{
@@ -98,29 +107,31 @@ namespace Open.Formatting
 		/// </summary>
 		public static string DecompressToString(byte[] data, Encoding encoding = null)
 		{
-			if(data==null)
-				throw new ArgumentNullException("data");
+			if (data == null)
+				throw new ArgumentNullException(nameof(data));
+			Contract.EndContractBlock();
 
 			return (encoding ?? Encoding.UTF8).GetString(Decompress(data)) ?? String.Empty;
 		}
 
 		public static string DecompressToString(string compressedText, Encoding encoding = null)
 		{
-			if(compressedText==null)
-				throw new ArgumentNullException("compressedText");
+			if (compressedText == null)
+				throw new ArgumentNullException(nameof(compressedText));
+			Contract.EndContractBlock();
 
 			if (compressedText.Length == 0)
 				return String.Empty;
 
 			byte[] compressedData = Convert.FromBase64String(compressedText);
-			if(compressedData.Length<4)
-				throw new Exception("Too short.");			
+			if (compressedData.Length < 4)
+				throw new Exception("Too short.");
 
 			using (var ms = new MemoryStream())
 			{
 				int dataLength = BitConverter.ToInt32(compressedData, 0);
-				if(dataLength<4)
-					throw new Exception("Too short.");			
+				if (dataLength < 4)
+					throw new Exception("Too short.");
 
 				ms.Write(compressedData, 4, compressedData.Length - 4);
 
@@ -130,7 +141,7 @@ namespace Open.Formatting
 				using (var stream = new GZipStream(ms, CompressionMode.Decompress))
 					stream.Read(buffer, 0, buffer.Length);
 
-				return (encoding??Encoding.UTF8).GetString(buffer);
+				return (encoding ?? Encoding.UTF8).GetString(buffer);
 			}
 		}
 	}
