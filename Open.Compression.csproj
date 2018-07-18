@@ -21,6 +21,14 @@ Part of the "Open" set of libraries.</Description>
     <PackageReleaseNotes>Updated to .NET Standard for compatability.</PackageReleaseNotes>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove=".git" />
     <None Remove=".gitignore" />
@@ -29,7 +37,7 @@ Part of the "Open" set of libraries.</Description>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Open.Collections" Version="2.2.0" />
+    <PackageReference Include="Open.Collections" Version="2.3.0" />
   </ItemGroup>
 
 </Project>

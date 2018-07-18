@@ -66,7 +66,7 @@ namespace Open.Formatting
 			Contract.EndContractBlock();
 
 
-			byte[] buffer = (encoding ?? Encoding.UTF8).GetBytes(text);
+			var buffer = (encoding ?? Encoding.UTF8).GetBytes(text);
 			var ms = new MemoryStream();
 			using (var stream = new GZipStream(ms, CompressionMode.Compress, true))
 				stream.Write(buffer, 0, buffer.Length);
@@ -111,7 +111,7 @@ namespace Open.Formatting
 				throw new ArgumentNullException(nameof(data));
 			Contract.EndContractBlock();
 
-			return (encoding ?? Encoding.UTF8).GetString(Decompress(data)) ?? String.Empty;
+			return (encoding ?? Encoding.UTF8).GetString(Decompress(data)) ?? string.Empty;
 		}
 
 		public static string DecompressToString(string compressedText, Encoding encoding = null)
@@ -121,15 +121,15 @@ namespace Open.Formatting
 			Contract.EndContractBlock();
 
 			if (compressedText.Length == 0)
-				return String.Empty;
+				return string.Empty;
 
-			byte[] compressedData = Convert.FromBase64String(compressedText);
+			var compressedData = Convert.FromBase64String(compressedText);
 			if (compressedData.Length < 4)
 				throw new Exception("Too short.");
 
 			using (var ms = new MemoryStream())
 			{
-				int dataLength = BitConverter.ToInt32(compressedData, 0);
+				var dataLength = BitConverter.ToInt32(compressedData, 0);
 				if (dataLength < 4)
 					throw new Exception("Too short.");
 
