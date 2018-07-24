@@ -111,7 +111,7 @@ namespace Open.Formatting
 				throw new ArgumentNullException(nameof(data));
 			Contract.EndContractBlock();
 
-			return (encoding ?? Encoding.UTF8).GetString(Decompress(data)) ?? string.Empty;
+			return (encoding ?? Encoding.UTF8).GetString(Decompress(data));
 		}
 
 		public static string DecompressToString(string compressedText, Encoding encoding = null)

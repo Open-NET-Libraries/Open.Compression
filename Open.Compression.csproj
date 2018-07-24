@@ -37,7 +37,7 @@ Part of the "Open" set of libraries.</Description>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Open.Collections" Version="2.3.0" />
+    <PackageReference Include="Open.Collections" Version="2.4.4" />
   </ItemGroup>
 
 </Project>
