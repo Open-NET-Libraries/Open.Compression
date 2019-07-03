@@ -3,8 +3,9 @@
  * Licensing: MIT https://github.com/electricessence/Open/blob/dotnet-core/LICENSE.md
  */
 
-using Open.Collections;
+using Open.Memory;
 using System;
+using System.Buffers;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Compression;
@@ -44,7 +45,7 @@ namespace Open.Formatting
 				throw new ArgumentNullException(nameof(data));
 			Contract.EndContractBlock();
 
-			return Compress(data.ToByteArray(encoding));
+			return Compress((encoding ?? Encoding.UTF8).GetBytes(data));
 		}
 
 		/// <summary>
@@ -65,21 +66,24 @@ namespace Open.Formatting
 				throw new ArgumentNullException(nameof(text));
 			Contract.EndContractBlock();
 
-
 			var buffer = (encoding ?? Encoding.UTF8).GetBytes(text);
-			var ms = new MemoryStream();
-			using (var stream = new GZipStream(ms, CompressionMode.Compress, true))
-				stream.Write(buffer, 0, buffer.Length);
+			using (var ms = new MemoryStream())
+			{
+				using (var stream = new GZipStream(ms, CompressionMode.Compress, true))
+					stream.Write(buffer, 0, buffer.Length);
 
-			ms.Position = 0;
+				ms.Position = 0;
 
-			var rawData = new byte[ms.Length];
-			ms.Read(rawData, 0, rawData.Length);
-
-			var compressedData = new byte[rawData.Length + 4];
-			Buffer.BlockCopy(rawData, 0, compressedData, 4, rawData.Length);
-			Buffer.BlockCopy(BitConverter.GetBytes(buffer.Length), 0, compressedData, 0, 4);
-			return Convert.ToBase64String(compressedData);
+				var pool = ArrayPool<byte>.Shared;
+				using (var rawData = pool.RentDisposable(ms.Length, true))
+				using (var compressedData = pool.RentDisposable(rawData.Length + 4, true))
+				{
+					ms.Read(rawData, 0, rawData.Length);
+					Buffer.BlockCopy(rawData.Array, 0, compressedData, 4, rawData.Length);
+					Buffer.BlockCopy(BitConverter.GetBytes(buffer.Length), 0, compressedData, 0, 4);
+					return Convert.ToBase64String(compressedData);
+				}
+			}
 		}
 
 
@@ -135,14 +139,17 @@ namespace Open.Formatting
 
 				ms.Write(compressedData, 4, compressedData.Length - 4);
 
-				var buffer = new byte[dataLength];
+				using(var buffer = ArrayPool<byte>.Shared.RentDisposable(dataLength, true))
+				{
 
-				ms.Position = 0;
-				using (var stream = new GZipStream(ms, CompressionMode.Decompress))
-					stream.Read(buffer, 0, buffer.Length);
+					ms.Position = 0;
+					using (var stream = new GZipStream(ms, CompressionMode.Decompress))
+						stream.Read(buffer.Array, 0, buffer.Length);
 
-				return (encoding ?? Encoding.UTF8).GetString(buffer);
+					return (encoding ?? Encoding.UTF8).GetString(buffer);
+				}
 			}
 		}
+
 	}
 }
