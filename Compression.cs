@@ -5,7 +5,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-
+using System.Threading.Tasks;
 
 namespace Open.Formatting
 {
@@ -13,6 +13,66 @@ namespace Open.Formatting
 	public static class Gzip
 	{
 		private const string TooShortMessage = "Too short.";
+
+		/// <summary>
+		/// Returns the compressed version of provided data.
+		/// </summary>
+		public static TStream Compress<TStream>(Stream source, TStream destination)
+			where TStream : Stream
+		{
+			if (source is null)
+				throw new ArgumentNullException(nameof(source));
+			if (destination is null)
+				throw new ArgumentNullException(nameof(destination));
+			Contract.EndContractBlock();
+
+			using var gs = new GZipStream(destination, CompressionMode.Compress);
+			source.CopyTo(gs);
+			return destination;
+		}
+
+		/// <summary>
+		/// Returns the compressed version of provided data.
+		/// </summary>
+		public static MemoryStream Compress(Stream source)
+		{
+			if (source is null)
+				throw new ArgumentNullException(nameof(source));
+			Contract.EndContractBlock();
+
+			return Compress(source, new MemoryStream());
+		}
+
+		/// <summary>
+		/// Returns the compressed version of provided data.
+		/// </summary>
+		/// <returns>The compressed data stream.</returns>
+		public static async Task<TStream> CompressAsync<TStream>(Stream source, TStream destination)
+			where TStream : Stream
+		{
+			if (source is null)
+				throw new ArgumentNullException(nameof(source));
+			if (destination is null)
+				throw new ArgumentNullException(nameof(destination));
+			Contract.EndContractBlock();
+
+			using var gs = new GZipStream(destination, CompressionMode.Compress);
+			await source.CopyToAsync(gs).ConfigureAwait(false);
+			return destination;
+		}
+
+		/// <summary>
+		/// Returns the compressed version of provided data.
+		/// </summary>
+		/// <returns>The compressed data stream.</returns>
+		public static Task<MemoryStream> CompressAsync(Stream source)
+		{
+			if (source is null)
+				throw new ArgumentNullException(nameof(source));
+			Contract.EndContractBlock();
+
+			return CompressAsync(source, new MemoryStream());
+		}
 
 		/// <summary>
 		/// Returns the compressed version of provided data.
@@ -25,10 +85,7 @@ namespace Open.Formatting
 
 			using var msi = new MemoryStream(data);
 			using var mso = new MemoryStream();
-			using (var gs = new GZipStream(mso, CompressionMode.Compress))
-				msi.CopyTo(gs);
-
-			return mso.ToArray();
+			return Compress(msi, mso).ToArray();
 		}
 
 		/// <summary>
@@ -77,6 +134,65 @@ namespace Open.Formatting
 			return Convert.ToBase64String(compressedData.Array, 0, rawData.Length + 4);
 		}
 
+		/// <summary>
+		/// Returns the decompressed version of provided data.
+		/// </summary>
+		public static TStream Decompress<TStream>(Stream source, TStream destination)
+			where TStream : Stream
+		{
+			if (source is null)
+				throw new ArgumentNullException(nameof(source));
+			if (destination is null)
+				throw new ArgumentNullException(nameof(destination));
+			Contract.EndContractBlock();
+
+			using var gs = new GZipStream(source, CompressionMode.Decompress);
+			gs.CopyTo(destination);
+			return destination;
+		}
+
+		/// <summary>
+		/// Returns the decompressed version of provided data.
+		/// </summary>
+		public static MemoryStream Decompress(Stream source)
+		{
+			if (source is null)
+				throw new ArgumentNullException(nameof(source));
+			Contract.EndContractBlock();
+
+			return Decompress(source, new MemoryStream());
+		}
+
+		/// <summary>
+		/// Returns the decompressed version of provided data.
+		/// </summary>
+		/// <returns>The decompressed data stream.</returns>
+		public static async Task<TStream> DecompressAsync<TStream>(Stream source, TStream destination)
+			where TStream : Stream
+		{
+			if (source is null)
+				throw new ArgumentNullException(nameof(source));
+			if (destination is null)
+				throw new ArgumentNullException(nameof(destination));
+			Contract.EndContractBlock();
+
+			using var gs = new GZipStream(source, CompressionMode.Decompress);
+			await gs.CopyToAsync(destination).ConfigureAwait(false);
+			return destination;
+		}
+
+		/// <summary>
+		/// Returns the decompressed version of provided data.
+		/// </summary>
+		/// <returns>The decompressed data stream.</returns>
+		public static Task<MemoryStream> DecompressAsync(Stream source)
+		{
+			if (source is null)
+				throw new ArgumentNullException(nameof(source));
+			Contract.EndContractBlock();
+
+			return CompressAsync(source, new MemoryStream());
+		}
 
 		/// <summary>
 		/// Returns the decompressed version of provided data.
@@ -89,10 +205,19 @@ namespace Open.Formatting
 
 			using var msi = new MemoryStream(data);
 			using var mso = new MemoryStream();
-			using (var gs = new GZipStream(msi, CompressionMode.Decompress))
-				gs.CopyTo(mso);
+			return Decompress(msi, mso).ToArray();
+		}
 
-			return mso.ToArray();
+		/// <summary>
+		/// Returns the decompressed byte array of provided string.
+		/// </summary>
+		public static byte[] Decompress(string data, Encoding? encoding = null)
+		{
+			if (data is null)
+				throw new ArgumentNullException(nameof(data));
+			Contract.EndContractBlock();
+
+			return Decompress((encoding ?? Encoding.UTF8).GetBytes(data));
 		}
 
 		/// <summary>
@@ -107,6 +232,9 @@ namespace Open.Formatting
 			return (encoding ?? Encoding.UTF8).GetString(Decompress(data));
 		}
 
+		/// <summary>
+		/// Returns the decompressed string of the compressed text.
+		/// </summary>
 		public static string DecompressToString(string compressedText, Encoding? encoding = null)
 		{
 			if (compressedText is null)
@@ -127,12 +255,13 @@ namespace Open.Formatting
 
 			ms.Write(compressedData, 4, compressedData.Length - 4);
 
-			using var buffer = ArrayPool<byte>.Shared.RentDisposable(dataLength, true);
+			using var B = ArrayPool<byte>.Shared.RentDisposable(dataLength, true);
+			var buffer = B.Array;
 			ms.Position = 0;
 			using (var stream = new GZipStream(ms, CompressionMode.Decompress))
-				stream.Read(buffer.Array, 0, buffer.Length);
+				dataLength = stream.Read(buffer, 0, buffer.Length);
 
-			return (encoding ?? Encoding.UTF8).GetString(buffer.Array, 0, buffer.Length);
+			return (encoding ?? Encoding.UTF8).GetString(buffer, 0, dataLength);
 		}
 
 	}
