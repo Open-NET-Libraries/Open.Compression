@@ -47,7 +47,7 @@ namespace Open.Formatting
 		/// Returns the compressed version of provided data.
 		/// </summary>
 		/// <returns>The compressed data stream.</returns>
-		public static async Task<TStream> CompressAsync<TStream>(Stream source, TStream destination)
+		public static async ValueTask<TStream> CompressAsync<TStream>(Stream source, TStream destination)
 			where TStream : Stream
 		{
 			if (source is null)
@@ -65,7 +65,7 @@ namespace Open.Formatting
 		/// Returns the compressed version of provided data.
 		/// </summary>
 		/// <returns>The compressed data stream.</returns>
-		public static Task<MemoryStream> CompressAsync(Stream source)
+		public static ValueTask<MemoryStream> CompressAsync(Stream source)
 		{
 			if (source is null)
 				throw new ArgumentNullException(nameof(source));
@@ -167,7 +167,7 @@ namespace Open.Formatting
 		/// Returns the decompressed version of provided data.
 		/// </summary>
 		/// <returns>The decompressed data stream.</returns>
-		public static async Task<TStream> DecompressAsync<TStream>(Stream source, TStream destination)
+		public static async ValueTask<TStream> DecompressAsync<TStream>(Stream source, TStream destination)
 			where TStream : Stream
 		{
 			if (source is null)
@@ -185,13 +185,13 @@ namespace Open.Formatting
 		/// Returns the decompressed version of provided data.
 		/// </summary>
 		/// <returns>The decompressed data stream.</returns>
-		public static Task<MemoryStream> DecompressAsync(Stream source)
+		public static ValueTask<MemoryStream> DecompressAsync(Stream source)
 		{
 			if (source is null)
 				throw new ArgumentNullException(nameof(source));
 			Contract.EndContractBlock();
 
-			return CompressAsync(source, new MemoryStream());
+			return DecompressAsync(source, new MemoryStream());
 		}
 
 		/// <summary>
