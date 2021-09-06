@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace Open.Formatting.Tests
+namespace Open.Compression.Tests
 {
 	public class StringSmokeTests
 	{

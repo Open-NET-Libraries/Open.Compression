@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Open.Compression\Open.Compression.csproj" />
+    <ProjectReference Include="..\Source\Open.Compression.csproj" />
   </ItemGroup>
 
 </Project>
