@@ -7,9 +7,8 @@ using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Open.Formatting
+namespace Open.Compression
 {
-
 	public static class Gzip
 	{
 		private const string TooShortMessage = "Too short.";

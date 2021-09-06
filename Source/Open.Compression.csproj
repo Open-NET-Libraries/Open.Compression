@@ -17,7 +17,7 @@
 		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Compression/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Compression/</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<Version>1.2.1</Version>
+		<Version>2.0.0</Version>
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
