@@ -16,6 +16,7 @@ namespace Open.Compression
 		/// <summary>
 		/// Returns the compressed version of provided data.
 		/// </summary>
+		/// <exception cref="ArgumentNullException">The source or destination are null.</exception>
 		public static TStream Compress<TStream>(Stream source, TStream destination)
 			where TStream : Stream
 		{
@@ -33,6 +34,7 @@ namespace Open.Compression
 		/// <summary>
 		/// Returns the compressed version of provided data.
 		/// </summary>
+		/// <exception cref="ArgumentNullException">The source stream is null.</exception>
 		public static MemoryStream Compress(Stream source)
 		{
 			if (source is null)
@@ -46,6 +48,7 @@ namespace Open.Compression
 		/// Returns the compressed version of provided data.
 		/// </summary>
 		/// <returns>The compressed data stream.</returns>
+		/// <exception cref="ArgumentNullException">The source or destination are null.</exception>
 		public static async ValueTask<TStream> CompressAsync<TStream>(Stream source, TStream destination)
 			where TStream : Stream
 		{
@@ -64,6 +67,7 @@ namespace Open.Compression
 		/// Returns the compressed version of provided data.
 		/// </summary>
 		/// <returns>The compressed data stream.</returns>
+		/// <exception cref="ArgumentNullException">The source data is null.</exception>
 		public static ValueTask<MemoryStream> CompressAsync(Stream source)
 		{
 			if (source is null)
@@ -76,6 +80,7 @@ namespace Open.Compression
 		/// <summary>
 		/// Returns the compressed version of provided data.
 		/// </summary>
+		/// <exception cref="ArgumentNullException">The source data is null.</exception>
 		public static byte[] Compress(byte[] data)
 		{
 			if (data is null)
@@ -90,6 +95,7 @@ namespace Open.Compression
 		/// <summary>
 		/// Returns the compressed byte array of provided string.
 		/// </summary>
+		/// <exception cref="ArgumentNullException">The source data is null.</exception>
 		public static byte[] Compress(string data, Encoding? encoding = null)
 		{
 			if (data is null)
@@ -102,6 +108,7 @@ namespace Open.Compression
 		/// <summary>
 		/// Returns the compressed string of provided byte array.
 		/// </summary>
+		/// <exception cref="ArgumentNullException">The source data is null.</exception>
 		public static string CompressToString(byte[] data, Encoding? encoding = null)
 		{
 			if (data is null)
@@ -111,6 +118,10 @@ namespace Open.Compression
 			return (encoding ?? Encoding.UTF8).GetString(Compress(data));
 		}
 
+		/// <summary>
+		/// Returns the compressed version of the source text.
+		/// </summary>
+		/// <exception cref="ArgumentNullException">The source text is null.</exception>
 		public static string CompressToString(string text, Encoding? encoding = null)
 		{
 			if (text is null)
@@ -136,6 +147,7 @@ namespace Open.Compression
 		/// <summary>
 		/// Returns the decompressed version of provided data.
 		/// </summary>
+		/// <exception cref="ArgumentNullException">The source or destination are null.</exception>
 		public static TStream Decompress<TStream>(Stream source, TStream destination)
 			where TStream : Stream
 		{
@@ -166,6 +178,7 @@ namespace Open.Compression
 		/// Returns the decompressed version of provided data.
 		/// </summary>
 		/// <returns>The decompressed data stream.</returns>
+		/// <exception cref="ArgumentNullException">The source or destination are null.</exception>
 		public static async ValueTask<TStream> DecompressAsync<TStream>(Stream source, TStream destination)
 			where TStream : Stream
 		{
@@ -184,6 +197,7 @@ namespace Open.Compression
 		/// Returns the decompressed version of provided data.
 		/// </summary>
 		/// <returns>The decompressed data stream.</returns>
+		/// <exception cref="ArgumentNullException">The source stream is null.</exception>
 		public static ValueTask<MemoryStream> DecompressAsync(Stream source)
 		{
 			if (source is null)
@@ -196,6 +210,7 @@ namespace Open.Compression
 		/// <summary>
 		/// Returns the decompressed version of provided data.
 		/// </summary>
+		/// <exception cref="ArgumentNullException">The source data is null.</exception>
 		public static byte[] Decompress(byte[] data)
 		{
 			if (data is null)
@@ -210,6 +225,7 @@ namespace Open.Compression
 		/// <summary>
 		/// Returns the decompressed byte array of provided string.
 		/// </summary>
+		/// <exception cref="ArgumentNullException">The source data is null.</exception>
 		public static byte[] Decompress(string data, Encoding? encoding = null)
 		{
 			if (data is null)
@@ -222,6 +238,7 @@ namespace Open.Compression
 		/// <summary>
 		/// Returns the decompressed string of provided byte array.
 		/// </summary>
+		/// <exception cref="ArgumentNullException">The source data is null.</exception>
 		public static string DecompressToString(byte[] data, Encoding? encoding = null)
 		{
 			if (data is null)
@@ -234,6 +251,7 @@ namespace Open.Compression
 		/// <summary>
 		/// Returns the decompressed string of the compressed text.
 		/// </summary>
+		/// <exception cref="ArgumentNullException">The compressed source text is null.</exception>
 		public static string DecompressToString(string compressedText, Encoding? encoding = null)
 		{
 			if (compressedText is null)
