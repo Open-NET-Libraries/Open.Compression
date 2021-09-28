@@ -138,7 +138,7 @@ namespace Open.Compression
 			var poolA = ms.Length > 128 && ms.Length <= int.MaxValue ? ArrayPool<byte>.Shared : null;
 			var rawData = poolA?.Rent((int)ms.Length) ?? new byte[ms.Length];
 			var poolB = rawData.Length > 124 ? ArrayPool<byte>.Shared : null;
-			var compressedData = poolB?.Rent(rawData.Length + 4) ?? new byte[rawData.Length];
+			var compressedData = poolB?.Rent(rawData.Length + 4) ?? new byte[rawData.Length + 4];
 			try
 			{
 				ms.Read(rawData, 0, rawData.Length);
