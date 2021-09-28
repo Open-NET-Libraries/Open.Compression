@@ -1,4 +1,4 @@
-﻿using Open.Memory;
+﻿//using Open.Memory;
 using System;
 using System.Buffers;
 using System.Diagnostics.Contracts;
@@ -135,13 +135,22 @@ namespace Open.Compression
 
 			ms.Position = 0;
 
-			var pool = ArrayPool<byte>.Shared;
-			using var rawData = pool.RentDisposable(ms.Length, true);
-			using var compressedData = pool.RentDisposable(rawData.Length + 4, true);
-			ms.Read(rawData.Array, 0, rawData.Length);
-			Buffer.BlockCopy(rawData.Array, 0, compressedData.Array, 4, rawData.Length);
-			Buffer.BlockCopy(BitConverter.GetBytes(buffer.Length), 0, compressedData.Array, 0, 4);
-			return Convert.ToBase64String(compressedData.Array, 0, rawData.Length + 4);
+			var poolA = ms.Length > 128 && ms.Length <= int.MaxValue ? ArrayPool<byte>.Shared : null;
+			var rawData = poolA?.Rent((int)ms.Length) ?? new byte[ms.Length];
+			var poolB = rawData.Length > 124 ? ArrayPool<byte>.Shared : null;
+			var compressedData = poolB?.Rent(rawData.Length + 4) ?? new byte[rawData.Length];
+			try
+			{
+				ms.Read(rawData, 0, rawData.Length);
+				Buffer.BlockCopy(rawData, 0, compressedData, 4, rawData.Length);
+				Buffer.BlockCopy(BitConverter.GetBytes(buffer.Length), 0, compressedData, 0, 4);
+				return Convert.ToBase64String(compressedData, 0, rawData.Length + 4);
+			}
+			finally
+			{
+				poolA?.Return(rawData, true);
+				poolB?.Return(compressedData, true);
+			}
 		}
 
 		/// <summary>
@@ -272,13 +281,20 @@ namespace Open.Compression
 
 			ms.Write(compressedData, 4, compressedData.Length - 4);
 
-			using var B = ArrayPool<byte>.Shared.RentDisposable(dataLength, true);
-			var buffer = B.Array;
-			ms.Position = 0;
-			using (var stream = new GZipStream(ms, CompressionMode.Decompress))
-				dataLength = stream.Read(buffer, 0, buffer.Length);
+			var pool = dataLength > 128 ? ArrayPool<byte>.Shared : null;
+			var buffer = pool?.Rent(dataLength) ?? new byte[dataLength];
+			try
+			{
+				ms.Position = 0;
+				using (var stream = new GZipStream(ms, CompressionMode.Decompress))
+					dataLength = stream.Read(buffer, 0, buffer.Length);
 
-			return (encoding ?? Encoding.UTF8).GetString(buffer, 0, dataLength);
+				return (encoding ?? Encoding.UTF8).GetString(buffer, 0, dataLength);
+			}
+			finally
+			{
+				pool?.Return(buffer, true);
+			}
 		}
 
 	}
